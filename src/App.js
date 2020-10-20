@@ -11,7 +11,7 @@ import "./App.css";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { data: [] };
+    this.state = { data: [], transactions: [] };
   }
 
   callAPIServer() {
@@ -19,10 +19,16 @@ class App extends React.Component {
     // to specified URL
     fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/accounts")
       .then(res => res.json())
-      .then(data => this.setState(data))
+      .then(res => this.setState({ data: res }))
       .catch(err => err);
 
-    }
+    // transactions
+    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/transactions")
+      .then(res => res.json())
+      .then(res => this.setState({ transactions: res }))
+      .catch(err => err);
+
+  }
   
   componentDidMount() {
     // react lifecycle method componentDidMount()
@@ -31,21 +37,27 @@ class App extends React.Component {
   }
  
 
-  componentDidUpdate() {
-    
-    /* prepare data */
-    console.log(this.state.data);
-    this.state.data.forEach(function (d) {
-      d.balance = d.balance.replace(/[^0-9.-]+/g,"");  //regular expression to convert currency to Numeric form
-    });
-    console.log(this.state.data);
-    
-    this.generateGraph();  //based on previous d3.js exampls
-    this.showChart();  //improved version way to chart
+ componentDidUpdate() {
+  
+  /* prepare data */
+  this.state.data.forEach(function (d) {
+    d.balance = d.balance.replace(/[^0-9.-]+/g,"");  //regular expression to convert currency to Numeric form
+  });
+  console.log(this.state.data);
 
-  }
+  this.state.transactions.forEach((d) => {
+    d.amount = d.amount.replace(/[^0-9.]+/g,"");
+  });
 
-  showChart() {
+  console.log(this.state.transactions);
+  
+  this.generateGraph();  //based on previous d3.js exampls
+  this.showChart();  //improved version way to chart
+  this.transactions();
+
+}
+
+showChart() {
 
   
   const margin = { top: 50, right: 50, bottom: 50, left: 50 };
@@ -83,8 +95,7 @@ class App extends React.Component {
 
   svg.append("g")
     .call(d3.axisLeft(y));
-  
-  }
+}
 
   generateGraph() {
 
@@ -121,10 +132,76 @@ class App extends React.Component {
       .attr("fill", "red")
       .text(function (d) {
         return d.account;
-      });
-      
-  
+      });    
   } 
+
+  transactions() {
+    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    var width = 1000 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    var svg = d3.select("#transactions")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+
+    var radius = Math.min(width, height) / 2;
+
+    var trans = this.state.transactions
+
+    var transactions_data = Object.values(trans.reduce((c, {category,amount}) => {
+      c[category] = c[category] || {category,amount: 0};
+      c[category].amount += parseInt(amount);
+      return c;
+    }, {}));
+    
+    //The <g> SVG element is a container used to group other SVG elements.
+    var g = svg.append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+  // set the color scale  
+    var color = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#394867"]);
+
+    // Compute the position of each group on the pie:   
+    var pie = d3.pie()
+        .value(function(d) { 
+          return d.amount; 
+      });
+    console.log(pie);
+
+    //radius for the arc   
+    var path = d3.arc()
+          .outerRadius(radius - 10)
+          .innerRadius(0);
+    
+    //radius for the label      
+    var label = d3.arc()
+          .outerRadius(radius).innerRadius(radius - 80);
+        
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    var arc = g.selectAll(".arc")
+        .data(pie(transactions_data))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+    
+    var arc2 = g.selectAll(".arc2")
+        .data(pie(transactions_data))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+
+    arc.append("path")
+        .attr("d", path)
+        .attr("fill", function(d) { return color(d.data.amount); });
+
+        //console.log(arc);
+  
+    arc2.append("text").attr("transform", function(d) { 
+        return "translate(" + label.centroid(d) + ")"; 
+    })
+          
+          .text(function(d) { return d.data.category; });
+          
+    };
 
   render() {
     return (
@@ -151,7 +228,11 @@ class App extends React.Component {
         <h2> Visualisation of Data</h2>
         <div id="visualisation">
             <svg id="barChart"></svg>
-          </div>
+        </div>
+        <h2>Transactions</h2>
+        <div>
+          <svg id="transactions"></svg>
+        </div>
       </div>
     );
   }
