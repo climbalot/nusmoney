@@ -216,30 +216,51 @@ showChart() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">FSB</h1>
+          <div className="flex-between">
+            <img src={logo} className="App-logo" alt="logo" />
+            <div className="App-title">FSB</div>
+          </div>
+          <div>
+            <button className="btn-rounded">Accounts</button>
+            <button className="btn-rounded">Customers</button>
+            <button className="btn-rounded">Expenses</button>
+          </div>
         </header>
+        <div className="container">
+          <div id="visualisation">
+          </div>
+          {/* <table className="myTable">
+            <tbody>
+            {this.state.data.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td> {item.account} </td>
+                  <td> {item.balance} </td>
+                </tr>
+              );
+            })}
+            </tbody>
+          </table>
+          
 
         <table className="myTable">
           <tbody>
             <h2> Customer Information </h2>
-            <div className="container">
-            {(this.state.customers).map((item) => {
-            return (
-              <tr key={item.id}>         
-                    <td> {item.first_name} </td>
-                    <td> {item.last_name} </td>
-                    <td> {item.email}  </td>
-                    <td> {item.gender} </td>
-              </tr>
-              
-            );
-          })} </div>
+              {(this.state.customers).map((item) => {
+              return (
+                <tr key={item.id}>         
+                      <td> {item.first_name} </td>
+                      <td> {item.last_name} </td>
+                      <td> {item.email}  </td>
+                      <td> {item.gender} </td>
+                </tr>
+                
+              );
+              })} 
           </tbody>
-          </table>
+        </table>
 
           <h3> Account Information</h3>
-        <div className="container">
           <table className="myTable">
             <tbody>
             {this.state.data.map((item) => {
@@ -251,21 +272,21 @@ showChart() {
               );
             })}
             </tbody>
-        </table>
+          </table>
         
 
         <h4> Visualisation of Data</h4>
-        <div id="visualisation">
-            <svg id="barChart"></svg>
-        </div>
-        <h2>Transactions</h2>
-        <div>
-          <svg id="transactions"></svg>
+          <div id="visualisation">
+              <svg id="barChart"></svg>
           </div>
-        </div>
+        <h2>Transactions</h2>
+          <div>
+            <svg id="transactions"></svg>
+          </div> */}
       </div>
+    </div>
     );
-  }
-}
+  };
+};
 
 export default App;
