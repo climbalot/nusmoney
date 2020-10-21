@@ -3,7 +3,7 @@ Generation of Charts Based on JSON data from Server
 Author: Prof Bhojan Anand */
 //Install d3.js:   npm install d3 --save
 import React from "react";
-import logo from "./brand-logo.png";
+import logo from "./fs-Logo.png";
 import * as d3 from 'd3' 
 
 import "./App.css";
@@ -11,12 +11,21 @@ import "./App.css";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { data: [], transactions: [] };
+    this.state = { customers: [], data: [], transactions: [] };
   }
 
   callAPIServer() {
     // when component mounted, start a GET request
     // to specified URL
+
+    // customers
+    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/customers")
+    // when we get a response map the body to json
+    .then(res => res.json())
+    // and update the state data to said json
+    .then(res => this.setState({ customers: res }));
+
+
     fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/accounts")
       .then(res => res.json())
       .then(res => this.setState({ data: res }))
@@ -208,30 +217,51 @@ showChart() {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">NUSmoney App by Anuflora Bank</h1>
+          <h1 className="App-title">FSB</h1>
         </header>
 
         <table className="myTable">
           <tbody>
-          {this.state.data.map((item) => {
+            <h2> Customer Information </h2>
+            <div className="container">
+            {(this.state.customers).map((item) => {
             return (
-              <tr key={item.id}>
-                <td> {item.account} </td>
-                <td> {item.balance} </td>
+              <tr key={item.id}>         
+                    <td> {item.first_name} </td>
+                    <td> {item.last_name} </td>
+                    <td> {item.email}  </td>
+                    <td> {item.gender} </td>
               </tr>
+              
             );
-          })}
+          })} </div>
           </tbody>
+          </table>
+
+          <h3> Account Information</h3>
+        <div className="container">
+          <table className="myTable">
+            <tbody>
+            {this.state.data.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td> {item.account} </td>
+                  <td> {item.balance} </td>
+                </tr>
+              );
+            })}
+            </tbody>
         </table>
         
 
-        <h2> Visualisation of Data</h2>
+        <h4> Visualisation of Data</h4>
         <div id="visualisation">
             <svg id="barChart"></svg>
         </div>
         <h2>Transactions</h2>
         <div>
           <svg id="transactions"></svg>
+          </div>
         </div>
       </div>
     );
