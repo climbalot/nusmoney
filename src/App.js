@@ -210,28 +210,29 @@ showChart() {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">NUSmoney App by Anuflora Bank</h1>
         </header>
+        <div className="container">
+          <table className="myTable">
+            <tbody>
+            {this.state.data.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td> {item.account} </td>
+                  <td> {item.balance} </td>
+                </tr>
+              );
+            })}
+            </tbody>
+          </table>
+          
 
-        <table className="myTable">
-          <tbody>
-          {this.state.data.map((item) => {
-            return (
-              <tr key={item.id}>
-                <td> {item.account} </td>
-                <td> {item.balance} </td>
-              </tr>
-            );
-          })}
-          </tbody>
-        </table>
-        
-
-        <h2> Visualisation of Data</h2>
-        <div id="visualisation">
-            <svg id="barChart"></svg>
-        </div>
-        <h2>Transactions</h2>
-        <div>
-          <svg id="transactions"></svg>
+          <h2> Visualisation of Data</h2>
+          <div id="visualisation">
+              <svg id="barChart"></svg>
+          </div>
+          <h2>Transactions</h2>
+          <div>
+            <svg id="transactions"></svg>
+          </div>
         </div>
       </div>
     );

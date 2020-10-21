@@ -14,8 +14,10 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-image: url(https://www.bbpsales.com/wp-content/uploads/2018/09/5-Corporate-Training-Resolutions-for-2018.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,6 +37,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.container {
+  width: 800px;
+  margin: auto;
+  background-color: #f7f7f7;
 }
 
 table.myTable {
