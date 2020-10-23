@@ -11,7 +11,13 @@ import "./App.css";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { customers: [], data: [], transactions: [] };
+    this.state = { 
+      customers: [],
+      data: [],
+      transactions: [],
+      customersClicked: false,
+      accountsClicked: false,
+      expensesClicked: false};
   }
 
   callAPIServer() {
@@ -60,23 +66,27 @@ class App extends React.Component {
 
   console.log(this.state.transactions);
   
-  this.generateGraph();  //based on previous d3.js exampls
-  this.showChart();  //improved version way to chart
-  this.transactions();
+  // this.generateGraph();  //based on previous d3.js exampls
+  // this.showChart();  //improved version way to chart
+  // this.transactions(); when the component updates, calls function
 
 }
 
-showChart() {
+showChart = () => {
 
   
   const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-  var width = 1000 - margin.left - margin.right;
+  var width = 800 - margin.left - margin.right;
   var height = 500 - margin.top - margin.bottom;
-  var svg = d3.select("#barChart")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  
+  var svg = d3
+      .select("#visualisation")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
   
   svg.selectAll("*").remove();
 
@@ -106,7 +116,8 @@ showChart() {
     .call(d3.axisLeft(y));
 }
 
-  generateGraph() {
+
+  generateGraph = () => {
 
     var maxVal = d3.max(this.state.data.map(details => Number(details.balance)));
     console.log(maxVal);
@@ -144,13 +155,16 @@ showChart() {
       });    
   } 
 
-  transactions() {
+  transactions = () => { 
     const margin = { top: 50, right: 50, bottom: 50, left: 50 };
     var width = 1000 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
-    var svg = d3.select("#transactions")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
+    
+    var svg = d3
+    .select("#visualisation")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
 
     var radius = Math.min(width, height) / 2;
 
@@ -162,6 +176,12 @@ showChart() {
       return c;
     }, {}));
     
+  // disableFunction() {
+  //   document.getElementById("btn1").disabled = true;
+  // }
+
+
+  
     //The <g> SVG element is a container used to group other SVG elements.
     var g = svg.append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -212,6 +232,28 @@ showChart() {
           
     };
 
+    clickAccounts = () => {
+      this.setState({
+        accountsClicked: this.state.accountsClicked = true,
+      });
+      this.showChart();
+    }
+
+    clickCustomers = () => {
+      this.setState({
+        customersClicked: this.state.customersClicked = true,
+      });
+      this.generateGraph();
+    }
+
+    clickExpenses = () => {
+      this.setState({
+        expensesClicked: this.state.expensesClicked = true,
+      });
+      this.transactions();
+    }
+
+
   render() {
     return (
       <div className="App">
@@ -221,31 +263,17 @@ showChart() {
             <div className="App-title">FSB</div>
           </div>
           <div>
-            <button className="btn-rounded">Accounts</button>
-            <button className="btn-rounded">Customers</button>
-            <button className="btn-rounded">Expenses</button>
+            <button disabled = {this.state.accountsClicked ? true : false } onClick= {this.clickAccounts} > Accounts </button>
+            <button disabled = {this.state.customersClicked ? true : false } onClick= {this.clickCustomers}> Customers </button>
+            <button disabled = {this.state.expensesClicked ? true : false } onClick= {this.clickExpenses}> Expenses </button>
           </div>
         </header>
         <div className="container">
           <div id="visualisation">
           </div>
-          {/* <table className="myTable">
-            <tbody>
-            {this.state.data.map((item) => {
-              return (
-                <tr key={item.id}>
-                  <td> {item.account} </td>
-                  <td> {item.balance} </td>
-                </tr>
-              );
-            })}
-            </tbody>
-          </table>
-          
-
+        <h2> Customer Information </h2>
         <table className="myTable">
           <tbody>
-            <h2> Customer Information </h2>
               {(this.state.customers).map((item) => {
               return (
                 <tr key={item.id}>         
@@ -254,7 +282,6 @@ showChart() {
                       <td> {item.email}  </td>
                       <td> {item.gender} </td>
                 </tr>
-                
               );
               })} 
           </tbody>
@@ -273,16 +300,6 @@ showChart() {
             })}
             </tbody>
           </table>
-        
-
-        <h4> Visualisation of Data</h4>
-          <div id="visualisation">
-              <svg id="barChart"></svg>
-          </div>
-        <h2>Transactions</h2>
-          <div>
-            <svg id="transactions"></svg>
-          </div> */}
       </div>
     </div>
     );

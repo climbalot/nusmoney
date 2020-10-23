@@ -52,10 +52,31 @@
   width: 800px;
   margin: auto;
   background-color: #f7f7f7;
+  padding: 8px;
 }
 
 /* UI */
-.btn-rounded {
+
+button {
+  border: 0;
+  padding: 1em;
+  position: relative;
+  cursor: pointer;
+  background: none;
+}
+button:after {
+  content: " ";
+  transition: background-color .3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+button:hover:after { background-color: rgba(0, 0, 0, 0.3); }
+
+/* .buttonStyle:hover { background: #383;} */
+/* .btn-rounded {
   color: white;
   padding: 8px 24px;
   border-radius: 4px;
@@ -63,10 +84,10 @@
   background: #1EDD88;
   transition: background 0.3s ease;
   margin: 0px 4px;
-}
+} */
 
 table.myTable {
-  border: 1px solid #1C6EA4;
+  /* border: 1px solid #1C6EA4; */
   background-color: #EEEEEE;
   width: 100%;
   text-align: left;
