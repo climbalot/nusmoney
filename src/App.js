@@ -264,7 +264,7 @@ showChart = () => {
           </div>
           <div>
             <button disabled = {this.state.accountsClicked ? true : false } onClick= {this.clickAccounts} > Accounts </button>
-            <button disabled = {this.state.customersClicked ? true : false } onClick= {this.clickCustomers}> Customers </button>
+            {/* <button disabled = {this.state.customersClicked ? true : false } onClick= {this.clickCustomers}> Customers </button> */}
             <button disabled = {this.state.expensesClicked ? true : false } onClick= {this.clickExpenses}> Expenses </button>
           </div>
         </header>
