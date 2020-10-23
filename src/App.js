@@ -24,18 +24,7 @@ class App extends React.Component {
     // when component mounted, start a GET request
     // to specified URL
 
-    // customers
-    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/customers")
-    // when we get a response map the body to json
-    .then(res => res.json())
-    // and update the state data to said json
-    .then(res => this.setState({ customers: res }));
 
-
-    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/accounts")
-      .then(res => res.json())
-      .then(res => this.setState({ data: res }))
-      .catch(err => err);
 
     // transactions
     fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/transactions")
@@ -70,11 +59,21 @@ class App extends React.Component {
   // this.showChart();  //improved version way to chart
   // this.transactions(); when the component updates, calls function
 
+} 
+
+clickAccounts = () => {
+  this.setState({
+    accountsClicked: this.state.accountsClicked = true,
+  });
+  fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/accounts")
+  .then(res => res.json())
+  .then(res => this.setState({ data: res }))
+  .catch(err => err);
+  this.showChart();
 }
 
 showChart = () => {
 
-  
   const margin = { top: 50, right: 50, bottom: 50, left: 50 };
   var width = 800 - margin.left - margin.right;
   var height = 500 - margin.top - margin.bottom;
@@ -232,17 +231,18 @@ showChart = () => {
           
     };
 
-    clickAccounts = () => {
-      this.setState({
-        accountsClicked: this.state.accountsClicked = true,
-      });
-      this.showChart();
-    }
+
 
     clickCustomers = () => {
       this.setState({
         customersClicked: this.state.customersClicked = true,
       });
+          // customers
+    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/customers")
+    // when we get a response map the body to json
+    .then(res => res.json())
+    // and update the state data to said json
+    .then(res => this.setState({ customers: res }));
       this.generateGraph();
     }
 
@@ -264,14 +264,14 @@ showChart = () => {
           </div>
           <div>
             <button disabled = {this.state.accountsClicked ? true : false } onClick= {this.clickAccounts} > Accounts </button>
-            {/* <button disabled = {this.state.customersClicked ? true : false } onClick= {this.clickCustomers}> Customers </button> */}
+            <button disabled = {this.state.customersClicked ? true : false } onClick= {this.clickCustomers}> Customers </button>
             <button disabled = {this.state.expensesClicked ? true : false } onClick= {this.clickExpenses}> Expenses </button>
           </div>
         </header>
         <div className="container">
           <div id="visualisation">
           </div>
-        <h2> Customer Information </h2>
+        
         <table className="myTable">
           <tbody>
               {(this.state.customers).map((item) => {
@@ -287,7 +287,7 @@ showChart = () => {
           </tbody>
         </table>
 
-          <h3> Account Information</h3>
+          
           <table className="myTable">
             <tbody>
             {this.state.data.map((item) => {
