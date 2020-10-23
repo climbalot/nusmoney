@@ -15,7 +15,6 @@ class App extends React.Component {
       customers: [],
       data: [],
       transactions: [],
-      customersClicked: false,
       accountsClicked: false,
       expensesClicked: false};
   }
@@ -23,15 +22,22 @@ class App extends React.Component {
   callAPIServer() {
     // when component mounted, start a GET request
     // to specified URL
+    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/accounts")
+    .then(res => res.json())
+    .then(res => this.setState({ data: res }))
+    .catch(err => err);
 
-
+    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/customers")
+    // when we get a response map the body to json
+    .then(res => res.json())
+    // and update the state data to said json
+    .then(res => this.setState({ customers: res }));
 
     // transactions
     fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/transactions")
       .then(res => res.json())
       .then(res => this.setState({ transactions: res }))
       .catch(err => err);
-
   }
   
   componentDidMount() {
@@ -39,38 +45,23 @@ class App extends React.Component {
     //will execute the callAPIserver() method after the component mounts.
     this.callAPIServer();
   }
- 
 
- componentDidUpdate() {
+  componentDidUpdate() {
   
-  /* prepare data */
-  this.state.data.forEach(function (d) {
-    d.balance = d.balance.replace(/[^0-9.-]+/g,"");  //regular expression to convert currency to Numeric form
-  });
-  console.log(this.state.data);
+    /* prepare data */
+    this.state.data.forEach(function (d) {
+      d.balance = d.balance.replace(/[^0-9.-]+/g,"");  //regular expression to convert currency to Numeric form
+    });
 
-  this.state.transactions.forEach((d) => {
-    d.amount = d.amount.replace(/[^0-9.]+/g,"");
-  });
+    this.state.transactions.forEach((d) => {
+      d.amount = d.amount.replace(/[^0-9.]+/g,"");
+    });
+    
+    // this.generateGraph();  //based on previous d3.js exampls
+    // this.showChart();  //improved version way to chart
+    // this.transactions(); when the component updates, calls function
 
-  console.log(this.state.transactions);
-  
-  // this.generateGraph();  //based on previous d3.js exampls
-  // this.showChart();  //improved version way to chart
-  // this.transactions(); when the component updates, calls function
-
-} 
-
-clickAccounts = () => {
-  this.setState({
-    accountsClicked: this.state.accountsClicked = true,
-  });
-  fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/accounts")
-  .then(res => res.json())
-  .then(res => this.setState({ data: res }))
-  .catch(err => err);
-  this.showChart();
-}
+  } 
 
 showChart = () => {
 
@@ -107,56 +98,17 @@ showChart = () => {
     .attr("y", d => y(d.balance))
     .attr("height", d => height - y(d.balance));
 
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x))
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
 
-  svg.append("g")
-    .call(d3.axisLeft(y));
-}
-
-
-  generateGraph = () => {
-
-    var maxVal = d3.max(this.state.data.map(details => Number(details.balance)));
-    console.log(maxVal);
-    var svg = d3
-      .select("#visualisation")
-      .append("svg")
-      .attr("width", 500)
-      .attr("height", 200);
-
-    svg
-      .selectAll("rect")
-      .data(this.state.data)
-      .enter()
-      .append("rect")
-      .attr("transform", function (d, i) {
-        return "translate(" + 60 + "," + i * 25 + ")";
-      })
-      .attr("fill", "blue")
-      .attr("height", 20)
-      .attr("width", function (d) {
-        return d.balance /maxVal * 500 + "px";
-      });
-      
-    svg
-      .selectAll("text")
-      .data(this.state.data)
-      .enter()
-      .append("text")
-      .attr("transform", function (d, i) {
-        return "translate(0," + Number(i * 25 + 15) + ")";
-      })
-      .attr("fill", "red")
-      .text(function (d) {
-        return d.account;
-      });    
-  } 
+    svg.append("g")
+      .call(d3.axisLeft(y));
+  }
 
   transactions = () => { 
-    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-    var width = 1000 - margin.left - margin.right;
+    const margin = { top: 24, right: 24, bottom: 24, left: 24 };
+    var width = 800 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
     
     var svg = d3
@@ -174,13 +126,7 @@ showChart = () => {
       c[category].amount += parseInt(amount);
       return c;
     }, {}));
-    
-  // disableFunction() {
-  //   document.getElementById("btn1").disabled = true;
-  // }
 
-
-  
     //The <g> SVG element is a container used to group other SVG elements.
     var g = svg.append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -193,7 +139,6 @@ showChart = () => {
         .value(function(d) { 
           return d.amount; 
       });
-    console.log(pie);
 
     //radius for the arc   
     var path = d3.arc()
@@ -229,29 +174,17 @@ showChart = () => {
           
           .text(function(d) { return d.data.category; });
           
-    };
+  };
 
+  clickAccounts = () => {
+    this.setState({ accountsClicked: true });
+    this.showChart();
+  }
 
-
-    clickCustomers = () => {
-      this.setState({
-        customersClicked: this.state.customersClicked = true,
-      });
-          // customers
-    fetch("https://f92c6b35-d121-4c8a-987b-81217155297f.mock.pstmn.io/customers")
-    // when we get a response map the body to json
-    .then(res => res.json())
-    // and update the state data to said json
-    .then(res => this.setState({ customers: res }));
-      this.generateGraph();
-    }
-
-    clickExpenses = () => {
-      this.setState({
-        expensesClicked: this.state.expensesClicked = true,
-      });
-      this.transactions();
-    }
+  clickExpenses = () => {
+    this.setState({ expensesClicked: true });
+    this.transactions();
+  };
 
 
   render() {
@@ -263,15 +196,15 @@ showChart = () => {
             <div className="App-title">FSB</div>
           </div>
           <div>
-            <button disabled = {this.state.accountsClicked ? true : false } onClick= {this.clickAccounts} > Accounts </button>
-            <button disabled = {this.state.customersClicked ? true : false } onClick= {this.clickCustomers}> Customers </button>
-            <button disabled = {this.state.expensesClicked ? true : false } onClick= {this.clickExpenses}> Expenses </button>
+            <button disabled = {this.state.accountsClicked ? true : false } onClick= {this.clickAccounts}>Accounts</button>
+            <button disabled = {this.state.expensesClicked ? true : false } onClick= {this.clickExpenses}>Expenses</button>
           </div>
         </header>
         <div className="container">
           <div id="visualisation">
           </div>
         
+        <h2>Customer Information</h2>
         <table className="myTable">
           <tbody>
               {(this.state.customers).map((item) => {
@@ -287,7 +220,7 @@ showChart = () => {
           </tbody>
         </table>
 
-          
+        <h2>Accounts Information</h2>
           <table className="myTable">
             <tbody>
             {this.state.data.map((item) => {
